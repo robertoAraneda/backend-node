@@ -64,7 +64,7 @@
 <body>
   <ul id="messages"></ul>
   <form id="form" action="">
-    <input id="input" autocomplete="off" /><button>Send</button>
+    <input id="input" autocomplete="off" /><button onclick="createUser()">Send</button>
   </form>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -87,6 +87,37 @@
           messages.appendChild(item);
           window.scrollTo(0, document.body.scrollHeight);
         });
+      socket.on('create user', function (data) {
+          var item = document.createElement('li');
+          item.textContent = "Se ha creado un usuario " + data.username;
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+      function createUser(){
+      var myHeaders = new Headers();
+        myHeaders.append("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjExMzY2MzgzLCJleHAiOjE2MTE0NTI3ODN9.KvlNxNZyknDsWv6iNKX9KhL7RZMXt4S-JkTgQcOA0GQ");
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({ 
+          "username": input.value, 
+          "password": "12345", 
+          "email": input.value+".araneda@asur.cl", 
+          "roles": ["user", "moderator"] });
+
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        };
+
+        fetch("http://localhost:3000/api/auth/signup", requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.log('error', error));
+
+    
+      }
   </script>
 </body>
 

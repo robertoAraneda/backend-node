@@ -1,13 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const socket = require("socket.io");
 
 const app = express();
+
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 
 var corsOptions = {
   origin: "http://localhost:8080",
 };
+
+app.use(function (req, res, next) {
+  res.io = io;
+  next();
+});
 
 app.use(cors(corsOptions));
 
@@ -33,9 +40,15 @@ require("./routes/user.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+/* const io = new socket.Server(server);
+
+app.use(function (req, res, next) {
+  res.io = io;
+  next();
+}); */
 
 const db = require("./models");
 const Role = db.role;
@@ -45,7 +58,7 @@ db.sequelize.sync({ force: true }).then(() => {
   initial();
 });
 
-//db.sequelize.sync();
+//b.sequelize.sync();
 
 function initial() {
   Role.create({
@@ -63,9 +76,6 @@ function initial() {
     name: "admin",
   });
 }
-
-//notificaciones con socket io
-const io = new socket.Server(server);
 
 io.on("connection", (socket) => {
   console.log("a user connected");
