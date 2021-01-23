@@ -8,7 +8,7 @@ const http = require("http").createServer(app);
 require("./sockets")(http, app);
 
 var corsOptions = {
-  origin: "http://localhost:8080",
+  origin: "http://localhost:3000",
 };
 
 app.use(cors(corsOptions));
