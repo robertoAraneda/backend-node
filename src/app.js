@@ -4,17 +4,12 @@ const cors = require("cors");
 
 const app = express();
 
-const server = require("http").Server(app);
-const io = require("socket.io")(server);
+const http = require("http").createServer(app);
+require("./sockets")(http, app);
 
 var corsOptions = {
   origin: "http://localhost:8080",
 };
-
-app.use(function (req, res, next) {
-  res.io = io;
-  next();
-});
 
 app.use(cors(corsOptions));
 
@@ -38,11 +33,6 @@ app.get("/chat", (req, res) => {
 require("./routes/auth.routes")(app);
 require("./routes/user.routes")(app);
 
-// set port, listen for requests
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
 /* const io = new socket.Server(server);
 
 app.use(function (req, res, next) {
@@ -77,15 +67,4 @@ function initial() {
   });
 }
 
-io.on("connection", (socket) => {
-  console.log("a user connected");
-
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
-
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
-    io.emit("chat message", msg);
-  });
-});
+module.exports = http;
